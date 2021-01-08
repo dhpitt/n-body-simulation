@@ -14,7 +14,7 @@ import matplotlib.animation as anim
 
 from scipy.integrate import odeint
 import plotly.graph_objects #as go
-from three_body_planet import pointMass
+from n_body_planet import pointMass
 
 # set up the simulation
 
