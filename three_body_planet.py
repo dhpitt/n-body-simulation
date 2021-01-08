@@ -18,8 +18,8 @@ class pointMass:
     # x,y,vx and vy.
 
     def __init__(self,x,y,v_naught_x,v_naught_y,m):
-        self.pos_ = np.array([x,y])
-        self.vel_ = np.array([v_naught_x,v_naught_y])
+        self.pos_ = [x,y]
+        self.vel_ = [v_naught_x,v_naught_y]
         self.m_ = float(m * M_Earth)
         self.p_ = np.multiply(self.vel_, self.m_)
         self.accel_ = [0.,0.]
@@ -27,43 +27,38 @@ class pointMass:
         self.history_ = np.array([self.pos_])
         self.velHist_ = np.array([self.vel_])
 
-    def gravitationOf(self,p2):
+    def gravitationOf(self,p2,offset):
         # method to calculate gravitational force from p2 
 
-        r = [(p2.pos_[0] - self.pos_[0]),(p2.pos_[1] - self.pos_[1])]
+        r = [(p2.pos_[0] - (self.pos_[0]+offset[0])),(p2.pos_[1] - (self.pos_[1]+offset[1]))]
+        print("r = ")
+        print(r)
         r_hat = np.divide(r,np.linalg.norm(r))
+        print("rhat = ")
+        print(r_hat)
         fGrav = np.multiply(r_hat,(real_G_const*self.m_ * p2.m_) / (np.linalg.norm(r)**2))
+        print("Grav =: ")
+        print(fGrav)
         return [fGrav[0], fGrav[1]]
-
-    def updatePosition(self,scene,dt):
-        # calculate dx/dt iteratively. goal is to write these
-        # out to a 2xn matrix for position for each of the planets
-        # on a time interval. 
-        # THIS IS BROKEN
-
-        self.accel_ = [0.,0.]
-
-        for p in scene:
-            if self.pos_[0] != p.pos_[0] and self.pos_[1] != p.pos_[1]:
-                self.accel_ += (np.divide(self.gravitationOf(p),self.m_))
-        #print(self.accel_)
-        self.vel_ += self.accel_*dt
-        self.pos_ += (np.multiply(self.vel_,dt) + 0.5*self.accel_*dt**2)
-
-        return self.pos_
-
+    
     def RK4_helper(self,dt,offset,scene): 
-        # in development. 
+        # helper function for Runge-Kutta 4 that gives an incremental
+        # acceleration and velocity to the planet 
         
-        y = np.array([self.vel_,self.accel_])
-        y += offset
+        y = np.array([self.pos_,self.vel_])
 
         self.accel_ = [0.,0.]
         dt = float(dt)
         for p in scene:
             if self != p:
-                self.accel_ += np.true_divide(self.gravitationOf(p),self.m_)
-
+                self.accel_ += np.true_divide(self.gravitationOf(p,offset),self.m_)
+        print("a")
+        print(y[0])
+        print("b")
+        print(np.multiply(self.vel_,dt))
+        print("c")
+        #print(0.5*np.multiply(self.accel_,dt**2))
+        print(self.accel_)
         y[0] += np.multiply(self.vel_,dt) +  0.5*np.multiply(self.accel_,dt**2)
         y[1] += np.multiply(self.accel_,dt)
 
@@ -84,5 +79,5 @@ class pointMass:
         return -(potential)
     
     def calculateUTotal(self,scene):
-        # not sure what do do with this. 
+        # Unused.
         return self.calculateKE() + self.calculateGPE(scene)

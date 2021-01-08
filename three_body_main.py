@@ -98,7 +98,7 @@ def RK4_step(t,dt,body,scene):
 
     y_old = np.array([body.history_[t-1],body.velHist_[t-1]])
 
-    k1 = np.multiply(body.RK4_helper(dt, 0, scene), dt) 
+    k1 = np.multiply(body.RK4_helper(dt, [0,0], scene), dt) 
     k2 = np.multiply(body.RK4_helper(dt, np.multiply(0.5,k1), scene), dt)
     k3 = np.multiply(body.RK4_helper(dt, np.multiply(0.5,k2), scene), dt)
     k4 = np.multiply(body.RK4_helper(dt, k3, scene), dt)
@@ -108,16 +108,18 @@ def RK4_step(t,dt,body,scene):
     body.pos_ = y_new[0]
     body.vel_ = y_new[1]
 
-#,b,c,tspace = RK4_solve_3body(0,20,100,planets_3b) # 3 body system output
+#a,b,c,tspace = RK4_solve_3body(0,20,100,planets_3b) # 3 body system output
 
 #results,tspace = RK4_solve_4body(0,20,50,planets_4b) # 4 body system output
-results,tspace = RK4_solve_nBody(0,20,50,planets_2b) # 4 body system output
+#results,tspace = RK4_solve_nBody(0,20,50,planets_2b) # 4 body system output
+results,tspace = RK4_solve_nBody(0,20,50,planets_3b) # 4 body system output
 
 
 a = results[0]
 b = results[1]
-'''
 c = results[2]
+'''
+
 d = results[3]
 '''
 
@@ -133,15 +135,15 @@ ax.set(xlim=(-1e8,1e8),ylim=(-1e8,1e8))
 
 d1, = plt.plot(a[0][0],a[0][1],'ro',color='blue')
 d2, = plt.plot(b[0][0],b[0][1],'ro',color='green')
-#d3, = plt.plot(c[0][0],c[0][1],'ro')
+d3, = plt.plot(c[0][0],c[0][1],'ro')
 #d4, = plt.plot(d[0][0],d[0][1],'ro',color='black')
 
 
 def animate3b(i):
     d1.set_data(a[i][0],a[i][1])
     d2.set_data(b[i][0],b[i][1])
-    #d3.set_data(c[i][0],c[i][1])
-    return d1,d2,#d3,
+    d3.set_data(c[i][0],c[i][1])
+    return d1,d2,d3,
 
 '''
 def animate4b(i):
